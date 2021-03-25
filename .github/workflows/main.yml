@@ -1,0 +1,23 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '0 1 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Login to the registry
+      run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p'${{ secrets.DOCKER_PASSWORD }}'
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile -t opussolutions/proxy-container
+    - name: Push Docker Image
+      run: |
+        docker tag opussolutions/proxy-container opussolutions/proxy-container:latest
+        docker push opussolutions/proxy-container:latest
+      shell: bash
